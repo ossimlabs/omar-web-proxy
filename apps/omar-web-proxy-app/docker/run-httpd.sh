@@ -52,7 +52,7 @@ fi
 if [ ! -z $CRL_HOME ] ; then
    pushd $CRL_HOME > /dev/null
    for x in `find . -name "*.crl"` ; do 
-     ln -s $x `openssl crl -noout -hash -in omar.crl`.r0 2>/dev/null
+     ln -s $x `openssl crl -noout -hash -in $x`.r0 2>/dev/null
    done
    popd > /dev/null
 fi
