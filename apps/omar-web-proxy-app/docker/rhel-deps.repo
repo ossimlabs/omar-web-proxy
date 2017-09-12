@@ -1,0 +1,7 @@
+[rhel-deps]
+name=CentOS-$releasever - ossim packages for $basearch
+baseurl=http://yum.ossim.io/rhel-deps/
+enabled=1
+gpgcheck=0
+metadata_expire=5m
+protect=1
