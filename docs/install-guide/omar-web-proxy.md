@@ -632,17 +632,10 @@ Alias /noindex/css/open-sans.css /usr/share/httpd/noindex/css/open-sans.css
 Alias /images/apache_pb.gif /usr/share/httpd/noindex/images/apache_pb.gif
 Alias /images/poweredby.png /usr/share/httpd/noindex/images/poweredby.png
 ```
- 
 
-##Openshift Deployment
+##PKI Support 
 
-You can override the contents of the **/etc/ssl/server-certs**,  **/etc/httpd/conf.d**, and **/etc/httpd/crl**  by using the config map UI within the Openshift environment.
-
-The container has a run script that will also support Certificate Revocation List (CRL) setup and configuration.  By default if the CRL_HOME env is not set it will look to see if a directory called /etc/httpd/crl exists, and if that directory exists it will set the CRL_HOME to that directory.  IF the ENV variable CRL_HOME is not empty it will automatically loop through all files with the .crl extension and execute:
-
- `openssl crl -noout -hash -in omar.crl`
-
-To support PKI authentication the example **reverse-proxy.conf** conf file above can be modified to include:
+If you would like to enable PKI then you can set the certs the same way as above.  If you would like to add Revocation list support you can add them via config maps.  Add each Certificate Refocation List (CRL) to the config map and have the config map mount to the directory location /etc/ssl/crl.  The config maps are mounted as root so when the proxy comes up it will generrate the proper has files for each CRL in a directory it can write to: /etc/httpd/crl. The following keys can be added to support PKI:
 
 ```
   SSLCertificateFile /etc/ssl/server-certs/server.pem
@@ -657,9 +650,6 @@ To support PKI authentication the example **reverse-proxy.conf** conf file above
   SSLProxyCheckPeerCN OFF
 ```
 
-where:
-
-- **server.pem** and **server.key** are PKI SSL certs 
-- **ca.crt** is the ca for the CERTs.  This file can contain a catenation of all root CA's.
-
+The **server.pem**, **server.key**, and the **ca.crt** are for the SSL PKI certificate and the added keys allow authenticating/verifying certs connecting through the proxy.  We use the **SSLCARevocationPath** for you may have multiple CRL definitions and you can not catenate them so the Path definition is used.
+ 
 
