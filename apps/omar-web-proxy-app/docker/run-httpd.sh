@@ -41,8 +41,8 @@ export NSS_WRAPPER_GROUP=/etc/group
 # Check defautl CRL location
 #
 if [ -z $CRL_HOME ] ; then
-   if [ -d /etc/httpd/crl ] ; then
-     export CRL_HOME=/etc/httpd/crl
+   if [ -d /etc/ssl/crl ] ; then
+     export CRL_HOME=/etc/ssl/crl
    fi
 fi
 
@@ -50,8 +50,11 @@ fi
 # files for revocation path
 #
 if [ ! -z $CRL_HOME ] ; then
-   pushd $CRL_HOME > /dev/null
-   for x in `find . -name "*.crl"` ; do 
+   if [ ! -d /etc/httpd/crl ] ; then
+      mkdir -p /etc/httpd/crl
+   fi
+   pushd /etc/httpd/crl > /dev/null
+   for x in `find $CRL_HOME -name "*.crl"` ; do 
      ln -s $x `openssl crl -noout -hash -in $x`.r0 2>/dev/null
    done
    popd > /dev/null
