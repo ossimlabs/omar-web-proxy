@@ -650,6 +650,15 @@ If you would like to enable PKI then you can set the certs the same way as above
   SSLProxyCheckPeerCN OFF
 ```
 
+If you would like to extract out USER infromation from the PKI CERT then add:
+
+```
+RequestHeader set USERNAME "%{SSL_CLIENT_S_DN_CN}s"
+RequestHeader set SSL_CLIENT_S_DN "%{SSL_CLIENT_S_DN}s"
+RequestHeader set SSL_CLIENT_S_CN "%{SSL_CLIENT_S_DN_CN}s"
+```
+after the virtual host setting.  The variable is arbtrary and can be called whatever you like.
+
 The **server.pem**, **server.key**, and the **ca.crt** are for the SSL PKI certificate and the added keys allow authenticating/verifying certs connecting through the proxy.  We use the **SSLCARevocationPath** for you may have multiple CRL definitions and you can not catenate them so the Path definition is used.
  
 
