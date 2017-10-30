@@ -1,5 +1,12 @@
 # OMAR Web Proxy
 
+## Source Location
+https://github.com/ossimlabs/omar-web-proxy
+
+## Purpose
+
+The OMAR Web Proxy application serves as an entry point for routing and PKI enablement of all OMAR services. Though there are many ways to provide routing and security, the OMAR web proxy provides a "one stop shop" for the OMAR services.
+
 ## Dockerfile
 
 Here is an example Dockerfile.  omar-base is no more than a CentOS 7 with the latest java installed and an omar user created for running apache server as a non root user.  If you have a centos7 container then you can use that inplace of the FROM clause.
@@ -10,7 +17,7 @@ MAINTAINER RadiantBlue Technologies radiantblue.com
 LABEL com.radiantblue.version="0.1"\
                 com.radiantblue.description="O2 Web Service proxy"\
                 com.radiantblue.source=""\
-                com.radiantblue.classification="UNCLASSIFIED" 
+                com.radiantblue.classification="UNCLASSIFIED"
 ENV HOME=/home/omar
 USER root
 ADD rhel-deps.repo /etc/yum.repos.d/rhel-deps.repo
@@ -633,7 +640,7 @@ Alias /images/apache_pb.gif /usr/share/httpd/noindex/images/apache_pb.gif
 Alias /images/poweredby.png /usr/share/httpd/noindex/images/poweredby.png
 ```
 
-##PKI Support 
+##PKI Support
 
 If you would like to enable PKI then you can set the certs the same way as above.  If you would like to add Revocation list support you can add them via config maps.  Add each Certificate Refocation List (CRL) to the config map and have the config map mount to the directory location /etc/ssl/crl.  The config maps are mounted as root so when the proxy comes up it will generrate the proper has files for each CRL in a directory it can write to: /etc/httpd/crl. The following keys can be added to support PKI:
 
@@ -660,5 +667,105 @@ RequestHeader set SSL_CLIENT_S_CN "%{SSL_CLIENT_S_DN_CN}s"
 after the virtual host setting.  The variable is arbtrary and can be called whatever you like.
 
 The **server.pem**, **server.key**, and the **ca.crt** are for the SSL PKI certificate and the added keys allow authenticating/verifying certs connecting through the proxy.  We use the **SSLCARevocationPath** for you may have multiple CRL definitions and you can not catenate them so the Path definition is used.
- 
 
+## Installation in Openshift
+
+**Assumption:** The omar-web-proxy-app docker image is pushed into the OpenShift server's internal docker registry and available to the project.
+
+### Persistent Volumes
+
+OMAR Web Proxy does not require any persistent volumes.
+
+### ConfigMaps
+
+The OMAR Web Proxy uses ConfigMaps to inject Apache configuration items as deployment time. All of the above configuration files are mounted to the running service. Namely, a ConfigMap with all configuration files found in */etc/httpd/conf.d* and */etc/ssl/server-certs* should be created.
+
+### Environment variables
+
+No special environment variables are necessary for the web proxy.
+
+### An Example DeploymentConfig
+```yaml
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftWebConsole
+  creationTimestamp: null
+  generation: 1
+  labels:
+    app: omar-web-proxy-app
+  name: omar-web-proxy-app
+spec:
+  replicas: 1
+  selector:
+    app: omar-web-proxy-app
+    deploymentconfig: omar-web-proxy-app
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      creationTimestamp: null
+      labels:
+        app: omar-web-proxy-app
+        deploymentconfig: omar-web-proxy-app
+    spec:
+      containers:
+      - image: 172.30.181.173:5000/o2/omar-web-proxy-app@sha256:c04021efc61a78e32b70a18493172fcf35004ba62f90c97fd03bdaa82fe481ee
+        imagePullPolicy: Always
+        name: omar-web-proxy-app
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        - containerPort: 443
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        volumeMounts:
+        - mountPath: /etc/ssl/server-certs
+          name: volume-hr2ws
+        - mountPath: /etc/httpd/conf.d
+          name: volume-5qp5k
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: web-proxy-certs
+        name: volume-hr2ws
+      - configMap:
+          defaultMode: 420
+          name: web-proxy-conf
+        name: volume-5qp5k
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - omar-web-proxy-app
+      from:
+        kind: ImageStreamTag
+        name: omar-web-proxy-app:latest
+        namespace: o2
+    type: ImageChange
+status:
+  availableReplicas: 0
+  latestVersion: 0
+  observedGeneration: 0
+  replicas: 0
+  unavailableReplicas: 0
+  updatedReplicas: 0
+```
