@@ -7,60 +7,6 @@ https://github.com/ossimlabs/omar-web-proxy
 
 The OMAR Web Proxy application serves as an entry point for routing and PKI enablement of all OMAR services. Though there are many ways to provide routing and security, the OMAR web proxy provides a "one stop shop" for the OMAR services.
 
-## Dockerfile
-
-Here is an example Dockerfile.  omar-base is no more than a CentOS 7 with the latest java installed and an omar user created for running apache server as a non root user.  If you have a centos7 container then you can use that inplace of the FROM clause.
-
-```
-FROM docker-registry-default.ossim.io/o2/omar-base:latest
-MAINTAINER RadiantBlue Technologies radiantblue.com
-LABEL com.radiantblue.version="0.1"\
-                com.radiantblue.description="O2 Web Service proxy"\
-                com.radiantblue.source=""\
-                com.radiantblue.classification="UNCLASSIFIED"
-ENV HOME=/home/omar
-USER root
-ADD rhel-deps.repo /etc/yum.repos.d/rhel-deps.repo
-RUN mkdir -p $HOME && \
-    yum --disablerepo=centos* -y install hostname httpd gettext && \
-    yum -y install nss_wrapper mod_ssl && yum clean all && \
-    sed '/^omar/d' /etc/passwd >$HOME/passwd-template && \
-    setcap cap_net_bind_service+ep /usr/sbin/httpd && \
-    setcap cap_net_bind_service+ep /usr/sbin/apachectl&& \
-    chmod -v +x $HOME/run-httpd.sh && \
-    chmod 770 /usr/share/httpd && \
-    chmod 770 /var/run/httpd && \
-    chown 1001:0 /run/httpd &&  \
-    chown 1001:0 /var/log/httpd && \
-    chmod 770 /var/log/httpd && \
-    chmod g+s /var/run/httpd && \
-    ln -sf /proc/self/fd/1 /var/log/httpd/access_log && \
-    ln -sf /proc/self/fd/1 /var/log/httpd/error_log && \
-    ln -sf /proc/self/fd/1 /var/log/httpd/ssl_access_log && \
-    ln -sf /proc/self/fd/1 /var/log/httpd/ssl_request_log && \
-    ln -sf /proc/self/fd/1 /var/log/httpd/ssl_error_log && \
-    find /usr/share/httpd -type d -exec chmod g+xws {} \; && \
-    find /usr/share/httpd -type f -exec chmod g+rw {} \; && \
-    find /etc/httpd -type d -exec chmod g+rw {} \; && \
-    find /etc/pki -type d -exec chmod g+xws {} \; && \
-    find /etc/pki -type f -exec chmod g+rw {} \; && \
-    chown -R 1001:0 /usr/share/httpd && \
-    chown -R 1001:0 /etc/httpd && \
-    chown -R 1001:0 /etc/pki && \
-    find $HOME -type d -exec chmod g+xws {} \; && \
-    find $HOME -type f -exec chmod g+rw {} \; && \
-    chown -R 1001:0 $HOME && \
-    chmod 770 $HOME/*.sh &&  \
-    chown -R 1001:0 $HOME
-VOLUME /dev/random /home
-EXPOSE 80 443
-WORKDIR $HOME
-USER 1001
-CMD ./run-httpd.sh
-```
-
-Ref: [omar-base](../../../omar-base/docs/install-guide/omar-base/)
-
 ##Configuration
 
 The web service has the certificates and the certificate of authority  located under the directory **/etc/ssl/server-certs**. The files created are named **server.key** and **server.pem** and **ca.crt**.  
