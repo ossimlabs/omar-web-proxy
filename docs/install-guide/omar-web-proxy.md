@@ -1,8 +1,5 @@
 # OMAR Web Proxy
 
-## Source Location
-https://github.com/ossimlabs/omar-web-proxy
-
 ## Purpose
 
 The OMAR Web Proxy application serves as an entry point for routing and PKI enablement of all OMAR services. Though there are many ways to provide routing and security, the OMAR web proxy provides a "one stop shop" for the OMAR services.
