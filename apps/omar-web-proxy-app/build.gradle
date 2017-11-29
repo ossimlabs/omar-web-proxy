@@ -8,48 +8,43 @@ buildscript {
         dockerStatementsOverride = {
             [
             "FROM ${project.dockerNamespaceUrl}${project.ext.baseImage}:${project.dockerAppTag}",
-            "MAINTAINER RadiantBlue Technologies radiantblue.com",
-            """LABEL com.radiantblue.version="0.1"\\
-                com.radiantblue.description="O2 Web Service proxy"\\
-                com.radiantblue.source=""\\
-                com.radiantblue.classification="UNCLASSIFIED" """,
             "ENV HOME=/home/omar",
             "USER root",
             "ADD rhel-deps.repo /etc/yum.repos.d/rhel-deps.repo",
             "ADD run-httpd.sh \$HOME/run-httpd.sh",
-            """RUN mkdir -p \$HOME && \
-                yum --disablerepo=centos* -y install hostname httpd gettext && \
-                yum -y install nss_wrapper mod_ssl && yum clean all && \
-                setcap cap_net_bind_service+ep /usr/sbin/httpd && \
-                setcap cap_net_bind_service+ep /usr/sbin/apachectl&& \
-                mkdir /etc/ssl/server-certs && \
-                mkdir /etc/httpd/crl && \
-                chmod -v +x \$HOME/run-httpd.sh && \
-                chmod 770 /usr/share/httpd && \
-                chmod 770 /var/run/httpd && \
-                chown 1001:0 /run/httpd && \
-                chown 1001:0 /var/log/httpd && \
-                chmod 770 /var/log/httpd && \
-                chmod g+s /var/run/httpd && \
-                ln -sf /proc/self/fd/1 /var/log/httpd/access_log && \
-                ln -sf /proc/self/fd/1 /var/log/httpd/error_log && \
-                ln -sf /proc/self/fd/1 /var/log/httpd/ssl_access_log && \
-                ln -sf /proc/self/fd/1 /var/log/httpd/ssl_request_log && \
-                ln -sf /proc/self/fd/1 /var/log/httpd/ssl_error_log && \
-                find /usr/share/httpd -type d -exec chmod g+xws {} \\; && \
-                find /usr/share/httpd -type f -exec chmod g+rw {} \\; && \
-                find /etc/httpd -type d -exec chmod g+rw {} \\; && \
-                find /etc/pki -type d -exec chmod g+xws {} \\; && \
-                find /etc/pki -type f -exec chmod g+rw {} \\; && \
-                chown -R 1001:0 /usr/share/httpd && \
-                chown -R 1001:0 /etc/httpd && \
-                chown -R 1001:0 /etc/pki && \
-                chown -R 1001:0 /etc/ssl&&\
-                find \$HOME -type d -exec chmod g+xws {} \\; && \
-                find \$HOME -type f -exec chmod g+rw {} \\; && \
-                chown -R 1001:0 \$HOME && \
-                chmod 770 \$HOME/*.sh && \
-                chown -R 1001:0 \$HOME""",
+            """RUN mkdir -p \$HOME && \\
+    yum --disablerepo=centos* -y install hostname httpd gettext && \\
+    yum -y install nss_wrapper mod_ssl && yum clean all && \\
+    setcap cap_net_bind_service+ep /usr/sbin/httpd && \\
+    setcap cap_net_bind_service+ep /usr/sbin/apachectl&& \\
+    mkdir /etc/ssl/server-certs && \\
+    mkdir /etc/httpd/crl && \\
+    chmod -v +x \$HOME/run-httpd.sh && \\
+    chmod 770 /usr/share/httpd && \\
+    chmod 770 /var/run/httpd && \\
+    chown 1001:0 /run/httpd && \\
+    chown 1001:0 /var/log/httpd && \\
+    chmod 770 /var/log/httpd && \\
+    chmod g+s /var/run/httpd && \\
+    ln -sf /proc/self/fd/1 /var/log/httpd/access_log && \\
+    ln -sf /proc/self/fd/1 /var/log/httpd/error_log && \\
+    ln -sf /proc/self/fd/1 /var/log/httpd/ssl_access_log && \\
+    ln -sf /proc/self/fd/1 /var/log/httpd/ssl_request_log && \\
+    ln -sf /proc/self/fd/1 /var/log/httpd/ssl_error_log && \\
+    find /usr/share/httpd -type d -exec chmod g+xws {} \\; && \\
+    find /usr/share/httpd -type f -exec chmod g+rw {} \\; && \\
+    find /etc/httpd -type d -exec chmod g+rw {} \\; && \\
+    find /etc/pki -type d -exec chmod g+xws {} \\; && \\
+    find /etc/pki -type f -exec chmod g+rw {} \\; && \\
+    chown -R 1001:0 /usr/share/httpd && \\
+    chown -R 1001:0 /etc/httpd && \\
+    chown -R 1001:0 /etc/pki && \\
+    chown -R 1001:0 /etc/ssl&& \\
+    find \$HOME -type d -exec chmod g+xws {} \\; && \\
+    find \$HOME -type f -exec chmod g+rw {} \\; && \\
+    chown -R 1001:0 \$HOME && \\
+    chmod 770 \$HOME/*.sh && \\
+    chown -R 1001:0 \$HOME""",
             "EXPOSE 80 443",
             "WORKDIR \$HOME",
             "USER 1001",
