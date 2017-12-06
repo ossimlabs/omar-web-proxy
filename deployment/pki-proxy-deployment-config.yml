@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: omar-pki-proxy-app
+  namespace: omar-dev
+  selfLink: /oapi/v1/namespaces/omar-dev/deploymentconfigs/omar-pki-proxy-app
+  uid: 2cfc997b-97c0-11e7-ba3b-0e704fd9c8b2
+  resourceVersion: '8862884'
+  generation: 137
+  creationTimestamp: '2017-09-12T13:42:10Z'
+  labels:
+    app: omar-pki-proxy-app
+  annotations:
+    openshift.io/generated-by: OpenShiftWebConsole
+spec:
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 600
+      maxUnavailable: 25%
+      maxSurge: 25%
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - omar-pki-proxy-app
+        from:
+          kind: ImageStreamTag
+          namespace: o2
+          name: 'omar-web-proxy-app:latest'
+        lastTriggeredImage: >-
+          172.30.181.173:5000/o2/omar-web-proxy-app@sha256:e34a022de961ef01f644ff91128471070f2822ee6d109f1acf372eaafb89ca94
+  replicas: 1
+  test: false
+  selector:
+    app: omar-pki-proxy-app
+    deploymentconfig: omar-pki-proxy-app
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: omar-pki-proxy-app
+        deploymentconfig: omar-pki-proxy-app
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      volumes:
+        - name: volume-lnn7o
+          configMap:
+            name: pki-proxy-certs
+            defaultMode: 420
+        - name: volume-9cw59
+          configMap:
+            name: pki-proxy-conf
+            defaultMode: 420
+        - name: volume-atbby
+          configMap:
+            name: pki-proxy-crl
+            defaultMode: 420
+      containers:
+        - name: omar-pki-proxy-app
+          image: >-
+            172.30.181.173:5000/o2/omar-web-proxy-app@sha256:e34a022de961ef01f644ff91128471070f2822ee6d109f1acf372eaafb89ca94
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 443
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: volume-lnn7o
+              mountPath: /etc/ssl/server-certs
+            - name: volume-9cw59
+              mountPath: /etc/httpd/conf.d
+            - name: volume-atbby
+              mountPath: /etc/ssl/crl
+          terminationMessagePath: /dev/termination-log
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+status:
+  latestVersion: 131
+  observedGeneration: 137
+  replicas: 1
+  updatedReplicas: 1
+  availableReplicas: 1
+  unavailableReplicas: 0
+  details:
+    message: image change
+    causes:
+      - type: ImageChange
+        imageTrigger:
+          from:
+            kind: ImageStreamTag
+            namespace: o2
+            name: 'omar-web-proxy-app:latest'
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2017-11-20T21:13:53Z'
+      lastTransitionTime: '2017-11-20T21:13:53Z'
+      message: Deployment config has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2017-11-30T12:30:49Z'
+      lastTransitionTime: '2017-11-30T12:30:47Z'
+      reason: NewReplicationControllerAvailable
+      message: replication controller "omar-pki-proxy-app-131" successfully rolled out
+  readyReplicas: 1
