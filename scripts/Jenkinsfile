@@ -19,13 +19,13 @@ node(""){
 
     stage("Checkout"){
         dir("ossim-ci") {
-            git branch: "${OSSIM_GIT_BRANCH}", url: "https://github.com/ossimlabs/ossim-ci.git"
+            git branch: "${OSSIM_GIT_BRANCH}", url: "${GIT_PUBLIC_SERVER_URL}/ossim-ci.git"
         }
         dir("omar-web-proxy") {
-            git branch: "${OSSIM_GIT_BRANCH}", url: "https://github.com/ossimlabs/omar-web-proxy.git"
+            git branch: "${OSSIM_GIT_BRANCH}", url: "${GIT_PUBLIC_SERVER_URL}/omar-web-proxy.git"
         }
         dir(omarCommonProjName) {
-            git branch: "${OSSIM_GIT_BRANCH}", url: "https://github.com/ossimlabs/${omarCommonProjName}.git"
+            git branch: "${OSSIM_GIT_BRANCH}", url: "${GIT_PUBLIC_SERVER_URL}/${omarCommonProjName}.git"
         }
         notifyObj = load "${workspaceDir}/ossim-ci/jenkins/pipeline/notify.groovy"
     }
