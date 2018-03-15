@@ -69,9 +69,11 @@ apply plugin: "maven"
 group "io.ossim.omar.apps"
 
 repositories {
-    mavenLocal()
     maven { url "${ossimMavenProxy}" }
-    mavenCentral()
+    if( Boolean.parseBoolean( System.env.WWW_CONNECTED ) ) {
+        mavenLocal()
+        mavenCentral()
+    }
 }
 
 dependencies {
