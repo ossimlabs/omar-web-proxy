@@ -17,7 +17,7 @@ OPENSHIFT_URL=https://openshift-master.ossim.io:8443
 oc login -u $OPENSHIFT_USER -p $OPENSHIFT_PASSWORD $OPENSHIFT_URL
 docker login -p `oc whoami -t` -e unused -u unused $DOCKER_REGISTRY_URL
 
-#./gradlew assemble
+#gradle assemble
 sed -e s/REGISTRY_URI/$DOCKER_REGISTRY_URL/g -e s/PROJECT_PLACEHOLDER/$REGISTRY_PROJECT_NAME/g -e s/TAG_PLACEHOLDER/$APP_TAG/g Dockerfile > Dockerfile.tmp
 docker build -f Dockerfile.tmp -t $APP_NAME:$APP_TAG .
 # rm -f Dockerfile.tmp
