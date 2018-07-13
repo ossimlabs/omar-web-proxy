@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The OMAR Web Proxy application serves as an entry point for routing and PKI enablement of all OMAR services. Though there are many ways to provide routing and security, the OMAR web proxy provides a "one stop shop" for the OMAR services.
+The OMAR Web Proxy application serves as an entry point for routing and PKI enablement of all OMAR services. Though there are many ways to provide routing and security, the OMAR web proxy provides a "one stop shop" for the OMAR services. We have added example for doing a simple password protected endpoint(s) that is conditional based on an htpasswd file existing on disk.
 
 ##Configuration
 
@@ -21,14 +21,20 @@ Redirect /ngt-service /ngt-service/
 ProxyPass /ngt-service/ http://ngt-service:8080/ngt-service/
 ProxyPassReverse /ngt-service/ http://ngt-service:8080/ngt-service/
 
+Redirect /omar /omar/
+ProxyPass /omar/ http://omar-oldmar-app:8080/omar/
+ProxyPassReverse /omar/ http://omar-oldmar-app:8080/omar/
 
-Redirect /oldmar-app /oldmar-app/
-ProxyPass /oldmar-app/ http://oldmar-app:8080/oldmar-app/
-ProxyPassReverse /oldmar-app/ http://oldmar-app:8080/oldmar-app/
+ProxyPass /omar-admin-server http://omar-admin-server:8080/omar-admin-server
+ProxyPassReverse /omar-admin-server http://omar-admin-server:8080/omar-admin-server
 
-Redirect /omar-avro /omar-avro/
-ProxyPass /omar-avro/ http://omar-avro-app:8080/omar-avro/
-ProxyPassReverse /omar-avro/ http://omar-avro-app:8080/omar-avro/
+Redirect /omar-cesium-terrain-builder /omar-cesium-terrain-builder/
+ProxyPass /omar-cesium-terrain-builder/ http://omar-cesium-terrain-buil:8080/omar-cesium-terrain-builder/
+ProxyPassReverse /omar-cesium-terrain-builder/ http://omar-cesium-terrain-buil:8080/omar-cesium-terrain-builder/
+
+Redirect /omar-cesium-terrain-server /omar-cesium-terrain-server/
+ProxyPass /omar-cesium-terrain-server/ http://omar-cesium-terrain-serv:8000/
+ProxyPassReverse /omar-cesium-terrain-server/ http://omar-cesium-terrain-serv:8000/
 
 Redirect /omar-docs /omar-docs/
 ProxyPass /omar-docs/ http://omar-docs-app:80/omar-docs/
@@ -50,9 +56,8 @@ Redirect /omar-git-mirror /omar-git-mirror/
 ProxyPass /omar-git-mirror/ http://omar-git-mirror-app:8080/omar-git-mirror/
 ProxyPassReverse /omar-git-mirror/ http://omar-git-mirror-app:8080/omar-git-mirror/
 
-Redirect /omar-jpip /omar-jpip/
-ProxyPass /omar-jpip/ http://omar-jpip-app:8080/omar-jpip/
-ProxyPassReverse /omar-jpip/ http://omar-jpip-app:8080/omar-jpip/
+ProxyPass /omar-jpip http://omar-jpip-app:8080/omar-jpip
+ProxyPassReverse /omar-jpip http://omar-jpip-app:8080/omar-jpip
 
 Redirect /omar-mensa /omar-mensa/
 ProxyPass /omar-mensa/ http://omar-mensa-app:8080/omar-mensa/
@@ -63,9 +68,9 @@ Redirect /omar-ui /omar-ui/
 ProxyPass /omar-ui/ http://omar-ui-app:8080/omar-ui/
 ProxyPassReverse /omar-ui/ http://omar-ui-app:8080/omar-ui/
 
-Redirect /omar-sqs /omar-sqs/
-ProxyPass /omar-sqs/ http://omar-sqs-app:8080/omar-sqs/
-ProxyPassReverse /omar-sqs/ http://omar-sqs-app:8080/omar-sqs/
+Redirect /omar-sqs-stager /omar-sqs-stager/
+ProxyPass /omar-sqs-stager/ http://omar-sqs-stager-app:8080/omar-sqs-stager/
+ProxyPassReverse /omar-sqs-stager/ http://omar-sqs-stager-app:8080/omar-sqs-stager/
 
 Redirect /omar-stager /omar-stager/
 ProxyPass /omar-stager/ http://omar-stager-app:8080/omar-stager/
@@ -111,20 +116,18 @@ Redirect /omar-avro-metadata /omar-avro-metadata/
 ProxyPass /omar-avro-metadata/ http://omar-avro-metadata-app:8080/omar-avro-metadata/
 ProxyPassReverse /omar-avro-metadata/ http://omar-avro-metadata-app:8080/omar-avro-metadata/
 
-Redirect /o2-mapproxy /o2-mapproxy/
-ProxyPass /o2-mapproxy/ http://o2-mapproxy:8080/
-ProxyPassReverse /o2-mapproxy/ http://o2-mapproxy:8080/
-
 Redirect /omar-mapproxy /omar-mapproxy/
 ProxyPass /omar-mapproxy/ http://omar-mapproxy:8080/
-ProxyPassReverse /oamr-mapproxy/ http://omar-mapproxy:8080/
+ProxyPassReverse /omar-mapproxy/ http://omar-mapproxy:8080/
+
+Redirect /omar-turbine-server /omar-turbine-server/
+ProxyPass /omar-turbine-server/ http://omar-turbine-server:8989/omar-turbine-server/
+ProxyPassReverse /omar-turbine-server/ http://omar-turbine-server:8989/omar-turbine-server/
 
 Redirect /isa-ui https://pki-omar-dev.ossim.io/isa-ui
 Redirect /isa-ui/ https://pki-omar-dev.ossim.io/isa-ui/
-
 Redirect /ossim-isa https://pki-omar-dev.ossim.io/ossim-isa
 Redirect /ossim-isa/ https://pki-omar-dev.ossim.io/ossim-isa/
-
 
 
 #######################################
@@ -142,6 +145,19 @@ Redirect /ossim-isa/ https://pki-omar-dev.ossim.io/ossim-isa/
   SSLVerifyDepth 10
 
 </VirtualHost>
+
+################################################
+# Protect locations if the htpasswd file exists
+################################################
+<Location /omar-stager/dataManager/removeRaster>
+    <If "-f '/etc/httpd/htpasswd/htpasswd'">
+      AuthType Basic
+      AuthName "Wrapper auth"
+      AuthBasicProvider file
+      AuthUserFile "/etc/httpd/htpasswd/htpasswd"
+      Require valid-user
+    </If>
+</Location>
 
 #######################################
 # CORS configuration
