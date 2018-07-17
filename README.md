@@ -1,6 +1,10 @@
 # omar-web-proxy
 
-The OMAR Web Proxy application acts as a proxy and reverse proxy for the OMAR services.  This is a generic web proxy and for full installation instructions please see:
+## Description
+
+The OMAR Web Proxy application acts as a proxy and reverse proxy for the OMAR services.  
+
+This is a generic web proxy and for full installation instructions please see:
 
 - [install-guide](docs/install-guide/omar-web-proxy.md)
 
