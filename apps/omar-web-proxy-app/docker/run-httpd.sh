@@ -20,6 +20,16 @@
 # context after restarting the container.  httpd won't start correctly
 # if it thinks it is already running.
 rm -rf /run/httpd/* /tmp/httpd*
+if [ -z $HOME ] ; then
+   export HOME=/home/omar
+fi
+if [ ! -z "${AWS_ACCESS_KEY}" ] ; then
+  export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
+fi
+
+if [ ! -z "${AWS_SECRET_KEY}" ] ; then
+  export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
+fi
 export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
 
@@ -58,6 +68,30 @@ if [ ! -z $CRL_HOME ] ; then
      ln -s $x `openssl crl -noout -hash -in $x`.r0 2>/dev/null
    done
    popd > /dev/null
+fi
+if [ -z "${MOUNT_POINT}" ] ; then
+  export MOUNT_POINT=/s3
+fi
+
+if [ -z "${GOOFY_OPTS}" ] ; then
+   GOOFY_OPTS="-o allow_other"
+fi
+
+# force to forground
+#  we are taking a comma separated list of buckets in the form of
+#  AWS  <bucket>:<prefix-path>,.....
+#  where :<prefix-path> is optional.  
+#  we will mount to the location <mount-point>/<prefix-path>
+# 
+GOOFY_OPTS="-f ${GOOFY_OPTS}"
+if [ ! -z "${BUCKETS}" ] ; then
+  SPLIT_BUCKET=${BUCKETS//\,/ }
+  
+  for BUCKET in ${SPLIT_BUCKET} ; do
+    BUCKET_PATH="${MOUNT_POINT}/${BUCKET//://}"
+    mkdir -p $BUCKET_PATH
+    goofys ${GOOFY_OPTS} ${BUCKET} ${BUCKET_PATH} &
+  done
 fi
 
 exec /usr/sbin/apachectl -DFOREGROUND
