@@ -8,7 +8,6 @@ buildscript {
             "FROM ${project.dockerNamespaceUrl}${project.ext.baseImage}:${project.dockerAppTag}",
             "ENV HOME=/home/omar",
             "USER root",
-            "ADD rhel-deps.repo /etc/yum.repos.d/rhel-deps.repo",
             "ADD run-httpd.sh \$HOME/run-httpd.sh",
             """RUN mkdir -p \$HOME && \\
     yum --disablerepo=centos* -y install hostname httpd gettext && \\
