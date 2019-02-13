@@ -56,10 +56,8 @@ buildscript {
         apply from: System.env.OMAR_COMMON_PROPERTIES
     }
     repositories {
-        maven { url "${ossimMavenProxy}" }
-        if( !System.env.WWW_CONNECTED || Boolean.parseBoolean( System.env.WWW_CONNECTED ) ) {
-            mavenLocal()
-        }
+        mavenLocal()
+        maven { url ossimMavenProxy }
     }
 }
 
@@ -76,14 +74,12 @@ apply plugin: "maven"
 group "io.ossim.omar.apps"
 
 repositories {
-    maven { url "${ossimMavenProxy}" }
-    if( !System.env.WWW_CONNECTED || Boolean.parseBoolean( System.env.WWW_CONNECTED ) ) {
-        mavenLocal()
-        mavenCentral()
-    }
+    mavenLocal()
+    maven { url ossimMavenProxy }
 }
 
 dependencies {
+    compile 'io.ossim.omar.plugins:omar-core-plugin:+'
     compile 'org.codehaus.groovy:groovy-all:2.4.7'
     compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
     compile 'org.postgresql:postgresql:9.4-1205-jdbc42'
