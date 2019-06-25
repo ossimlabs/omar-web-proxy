@@ -30,11 +30,6 @@ node("${BUILD_NODE}"){
         load "ossim-ci/jenkins/variables/omar-web-proxy-variables.groovy"
     }
 
-    stage ( "Assemble" ) {
-        sh "gradle assemble -PossimMavenProxy=${ OSSIM_MAVEN_PROXY }"
-        archiveArtifacts "apps/*/build/libs/*.jar"
-    }
-
     stage ("Publish Nexus") {
         withCredentials([[$class: 'UsernamePasswordMultiBinding',
             credentialsId: 'nexusCredentials',
