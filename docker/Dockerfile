@@ -9,7 +9,7 @@ RUN yum --disablerepo=centos* -y install httpd
 RUN yum --disablerepo=centos* -y install gettext
 RUN yum -y install nss_wrapper
 RUN yum -y install mod_ssl
-RUN yum yum clean all
+RUN yum clean all
 RUN setcap cap_net_bind_service+ep /usr/sbin/httpd
 RUN setcap cap_net_bind_service+ep /usr/sbin/apachectl
 RUN mkdir /etc/ssl/server-certs
