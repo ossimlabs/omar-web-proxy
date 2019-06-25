@@ -1,7 +1,7 @@
 properties([
     parameters ([
         string(name: 'BUILD_NODE', defaultValue: 'omar-build', description: 'The build node to run on'),
-        string(name: 'GIT_PUBLIC_SERVER_URL', defaultValue: 'https://github.com/ossimlabs', description: ''),
+        string(name: 'GIT_PRIVATE_SERVER_URL', defaultValue: 'https://github.com/Maxar-Corp', description: ''),
         booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: true, description: 'Clean the workspace at the end of the run'),
         string(name: 'CREDENTIALS_ID', defaultValue: 'cicdGithub', description: ''),
     ]),
