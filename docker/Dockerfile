@@ -26,11 +26,11 @@ RUN ln -sf /proc/self/fd/1 /var/log/httpd/error_log
 RUN ln -sf /proc/self/fd/1 /var/log/httpd/ssl_access_log
 RUN ln -sf /proc/self/fd/1 /var/log/httpd/ssl_request_log
 RUN ln -sf /proc/self/fd/1 /var/log/httpd/ssl_error_log
-RUN find /usr/share/httpd -type d -exec chmod g+xws {} \\;
-RUN find /usr/share/httpd -type f -exec chmod g+rw {} \\;
-RUN find /etc/httpd -type d -exec chmod g+rw {} \\;
-RUN find /etc/pki -type d -exec chmod g+xws {} \\;
-RUN find /etc/pki -type f -exec chmod g+rw {} \\;
+RUN find /usr/share/httpd -type d -exec chmod g+xws {} \;
+RUN find /usr/share/httpd -type f -exec chmod g+rw {} \;
+RUN find /etc/httpd -type d -exec chmod g+rw {} \;
+RUN find /etc/pki -type d -exec chmod g+xws {} \;
+RUN find /etc/pki -type f -exec chmod g+rw {} \;
 RUN chown -R 1001:0 /usr/share/httpd
 RUN chown -R 1001:0 /etc/httpd
 RUN chown -R 1001:0 /etc/pki
