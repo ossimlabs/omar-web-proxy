@@ -55,6 +55,9 @@ buildscript {
         mavenLocal()
         maven { url ossimMavenProxy }
     }
+    dependencies {
+        classpath 'io.ossim:gradleDefaults:1.7-SNAPSHOT'
+    }
 }
 
 plugins {
