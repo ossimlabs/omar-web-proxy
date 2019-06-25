@@ -5,8 +5,8 @@ USER root
 ADD run-httpd.sh $HOME/run-httpd.sh
 RUN mkdir -p $HOME
 RUN yum --disablerepo=centos* -y install hostname
-RUN yum --disablerepo=centos* -y httpd
-RUN yum --disablerepo=centos* -y gettext
+RUN yum --disablerepo=centos* -y install httpd
+RUN yum --disablerepo=centos* -y install gettext
 RUN yum -y install nss_wrapper
 RUN yum -i install mod_ssl
 RUN yum yum clean all
