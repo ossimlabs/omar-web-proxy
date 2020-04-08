@@ -35,7 +35,7 @@ node("${BUILD_NODE}"){
                 credentialsId: 'nexusCredentials',
                 usernameVariable: 'MAVEN_REPO_USERNAME',
                 passwordVariable: 'MAVEN_REPO_PASSWORD']]) {
-                sh "gradle publish -PossimMavenProxy=${ OSSIM_MAVEN_PROXY }"
+                sh "gradle publish -PossimMavenProxy=${MAVEN_DOWNLOAD_URL}"
             }
         }
 
@@ -45,7 +45,7 @@ node("${BUILD_NODE}"){
                 usernameVariable: 'DOCKER_REGISTRY_USERNAME',
                 passwordVariable: 'DOCKER_REGISTRY_PASSWORD']]) {
                 // Run all tasks on the app. This includes pushing to OpenShift and S3.
-                sh "gradle pushDockerImage -PossimMavenProxy=${ OSSIM_MAVEN_PROXY }"
+                sh "gradle pushDockerImage -PossimMavenProxy=${MAVEN_DOWNLOAD_URL}"
             }
         }
 
@@ -55,7 +55,7 @@ node("${BUILD_NODE}"){
                 usernameVariable: 'OPENSHIFT_USERNAME',
                 passwordVariable: 'OPENSHIFT_PASSWORD']]) {
                 // Run all tasks on the app. This includes pushing to OpenShift and S3.
-                sh "gradle openshiftTagImage -PossimMavenProxy=${ OSSIM_MAVEN_PROXY }"
+                sh "gradle openshiftTagImage -PossimMavenProxy=${MAVEN_DOWNLOAD_URL}"
             }
         }
     } finally {
