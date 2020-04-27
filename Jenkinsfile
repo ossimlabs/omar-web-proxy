@@ -30,6 +30,16 @@ node("${BUILD_NODE}"){
             load "common-variables.groovy"
         }
 
+        stage ("SonarQube"){
+          def scannerHome = tool 'SonarQube Scanner 4.3'
+          withSonarQubeEnv('sonarQube'){
+
+          sh """
+            ${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=omar-web-proxy -Dsonar.login=${SONARQUBE_OMAR_TOKEN }
+          """
+          }
+        }
+
         stage ("Publish Nexus") {
             withCredentials([[$class: 'UsernamePasswordMultiBinding',
                 credentialsId: 'nexusCredentials',
